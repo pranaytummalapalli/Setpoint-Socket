@@ -12,8 +12,10 @@ int main(int argc, char const* argv[])
 {
 	int status, valread, client_fd;
 	struct sockaddr_in serv_addr;
-	char* hello = "Hello from client";
-	char buffer[1024] = { 0 };
+
+	long buffer[10] = { 0 };
+
+
 	if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
 		printf("\n Socket creation error \n");
 		return -1;
@@ -38,13 +40,12 @@ int main(int argc, char const* argv[])
 		printf("\nConnection Failed \n");
 		return -1;
 	}
-	// send(client_fd, hello, strlen(hello), 0);
-	// printf("Hello message sent\n");
-	valread = read(client_fd, buffer,
-				1024 - 1); // subtract 1 for the null
-							// terminator at the end
-	printf("%s\n", buffer);
-
+	while(1){
+	    valread = read(client_fd, buffer,
+	    			sizeof(buffer)); // subtract 1 for the null
+	    						// terminator at the end
+	    printf("%ld\n", buffer[0]);
+    }
 	// closing the connected socket
 	close(client_fd);
 	return 0;

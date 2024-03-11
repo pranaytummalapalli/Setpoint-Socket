@@ -7,6 +7,9 @@
 
 #define PORT 8080
 
+long setpoint[10] = {1};
+
+
 int main(int argc, char const* argv[])
 {
     int server_fd, new_socket;
@@ -14,8 +17,10 @@ int main(int argc, char const* argv[])
     struct sockaddr_in address;
     int opt = 1;
     socklen_t addrlen = sizeof(address);
-    char buffer[1024] = { 0 };
-    char* hello = "Hello from server";
+   
+    setpoint[0] = atoi(argv[1]);
+
+
  
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -55,10 +60,12 @@ int main(int argc, char const* argv[])
     // valread = read(new_socket, buffer,
                 //    1024 - 1); // subtract 1 for the null
                               // terminator at the end
-    printf("%s\n", buffer);
-    send(new_socket, hello, strlen(hello), 0);
-    printf("Hello message sent\n");
- 
+    // printf("%ln\n", buffer);
+    while(1){
+        scanf("%ld", &setpoint[0]);
+        send(new_socket, setpoint, sizeof(setpoint), 0);
+        printf("Setpoint sent: %ld\n", setpoint[0]);
+    }
     // closing the connected socket
     close(new_socket);
     // closing the listening socket
