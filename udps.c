@@ -47,10 +47,10 @@ int main(void){
         }
         else{
         }
-        if(recvfrom(socket_desc, ack, sizeof(ack), MSG_WAITALL, (struct sockaddr *)&client_addr, &client_struct_length) < 0){
+        if(recvfrom(socket_desc, ack, sizeof(int), MSG_WAITALL, (struct sockaddr *)&client_addr, &client_struct_length) < 0){
             perror("rec failed");
         }
-        if(sendto(socket_desc, server_data, sizeof(server_data), 0,
+        if(sendto(socket_desc, server_data, sizeof(long), 0,
              (struct sockaddr*)&client_addr, client_struct_length) < 0){
             perror("Unable to send message");
             // return -1;
