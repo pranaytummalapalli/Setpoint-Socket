@@ -4,19 +4,22 @@
 #include <arpa/inet.h>
 #include <poll.h>
 #include <unistd.h>
+#include <sys/time.h>
 
 int main(void){
-    struct pollfd in_poll = {STDIN_FILENO, POLLIN|POLLPRI};
+    // struct pollfd in_poll = {STDIN_FILENO, POLLIN|POLLPRI};
     struct timeval read_timeout;
 
     read_timeout.tv_sec = 0;
     read_timeout.tv_usec = 10;
     int socket_desc;
-    struct sockaddr_in server_addr;
-    // char server_message[2000], client_message[2000];
+    struct sockaddr_in server_addr, client_addr;
+    // char server_message[2000], data[2000];
     int server_struct_length = sizeof(server_addr);
+    int client_struct_length = sizeof(client_addr);
 
-    char client_message[2000];
+    long data[1];
+    int ack[1] = {1771};
     
     // Create socket:
     socket_desc = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
@@ -32,22 +35,22 @@ int main(void){
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(2000);
     server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    
-    // Get input from the user:
-    printf("Enter message: ");
-    while(1){
-        if(poll(&in_poll, 1, 10)){
-            scanf("%s", &client_message);
-        }
-        else{
-        }
 
-        // Send the message to server:
-        if(sendto(socket_desc, client_message, sizeof(client_message), 0,
-             (struct sockaddr*)&server_addr, server_struct_length) < 0){
-            printf("Unable to send message\n");
-            return -1;
+
+    // if(connect(socket_desc, (struct spckaddr *)&server_addr, server_struct_length) < 0){
+    //     perror("Failed connect");
+    // }
+    
+    while(1){
+        if(sendto(socket_desc, ack, sizeof(ack), 0, (struct sockaddr *)&server_addr, &server_struct_length) < 0){
+            perror("Ack failed");
         }
+        // Send the message to server:
+        if (recvfrom(socket_desc, data, sizeof(data), 0,
+         (struct sockaddr*)&server_addr, &server_struct_length) < 0){
+        perror("Couldn't receive");
+        }
+        printf("recv data: %ld\n", data[0]);
     }
     
     // Close the socket:
